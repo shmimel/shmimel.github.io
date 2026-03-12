@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simon — Maker / Builder / Creator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --col-bg: #0a0a0f;
+      --col-surface: #131320;
+      --col-text: #e8e6f0;
+      --col-muted: #8a879a;
+      --col-accent-1: #ff5c3a;   /* hot coral */
+      --col-accent-2: #3adfff;   /* electric cyan */
+      --col-accent-3: #c77dff;   /* lavender violet */
+      --col-accent-4: #ffea2e;   /* signal yellow */
+      --col-accent-5: #3aff9f;   /* mint green */
+      --radius: 16px;
+      --font-display: 'DM Serif Display', Georgia, serif;
+      --font-body: 'Outfit', system-ui, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--col-bg);
+      color: var(--col-text);
+      line-height: 1.65;
+      overflow-x: hidden;
+    }
+
+    /* ── GRAIN OVERLAY ── */
+    body::after {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; width: 100%; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.2rem 2.4rem;
+      background: rgba(10, 10, 15, 0.7);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .nav-logo {
+      font-family: var(--font-display);
+      font-size: 1.5rem;
+      color: var(--col-accent-1);
+      text-decoration: none;
+      letter-spacing: -0.02em;
+    }
+    .nav-links { display: flex; gap: 2rem; list-style: none; }
+    .nav-links a {
+      color: var(--col-muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      transition: color 0.3s;
+    }
+    .nav-links a:hover { color: var(--col-accent-2); }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh;
+      display: flex; flex-direction: column; justify-content: center;
+      padding: 8rem 2.4rem 4rem;
+      position: relative;
+    }
+    .hero-bg {
+      position: absolute; inset: 0; overflow: hidden; z-index: 0;
+    }
+    .hero-bg .blob {
+      position: absolute; border-radius: 50%; filter: blur(100px); opacity: 0.35;
+      animation: drift 14s ease-in-out infinite alternate;
+    }
+    .blob-1 { width: 500px; height: 500px; background: var(--col-accent-1); top: -10%; left: -5%; }
+    .blob-2 { width: 400px; height: 400px; background: var(--col-accent-3); bottom: 10%; right: -5%; animation-delay: -4s; }
+    .blob-3 { width: 350px; height: 350px; background: var(--col-accent-2); top: 40%; left: 40%; animation-delay: -8s; }
+
+    @keyframes drift {
+      0% { transform: translate(0, 0) scale(1); }
+      100% { transform: translate(40px, -30px) scale(1.15); }
+    }
+
+    .hero-content { position: relative; z-index: 1; max-width: 900px; }
+    .hero-tag {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      color: var(--col-accent-4);
+      margin-bottom: 1.5rem;
+      opacity: 0; animation: fadeUp 0.8s 0.2s forwards;
+    }
+    .hero-tag::before {
+      content: ''; width: 32px; height: 2px;
+      background: var(--col-accent-4);
+    }
+    .hero-title {
+      font-family: var(--font-display);
+      font-size: clamp(3rem, 8vw, 6.5rem);
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+      margin-bottom: 1.5rem;
+      opacity: 0; animation: fadeUp 0.8s 0.4s forwards;
+    }
+    .hero-title .highlight-1 { color: var(--col-accent-1); }
+    .hero-title .highlight-2 { color: var(--col-accent-2); }
+    .hero-title .highlight-3 { color: var(--col-accent-3); }
+    .hero-desc {
+      font-size: 1.2rem; color: var(--col-muted); max-width: 560px;
+      margin-bottom: 2.5rem;
+      opacity: 0; animation: fadeUp 0.8s 0.6s forwards;
+    }
+    .hero-actions {
+      display: flex; gap: 1rem; flex-wrap: wrap;
+      opacity: 0; animation: fadeUp 0.8s 0.8s forwards;
+    }
+    .btn {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      padding: 0.85rem 2rem;
+      border-radius: 60px;
+      font-family: var(--font-body);
+      font-weight: 600; font-size: 0.95rem;
+      text-decoration: none;
+      transition: transform 0.25s, box-shadow 0.25s;
+      cursor: pointer; border: none;
+    }
+    .btn:hover { transform: translateY(-2px); }
+    .btn-primary {
+      background: var(--col-accent-1); color: #fff;
+      box-shadow: 0 4px 24px rgba(255, 92, 58, 0.3);
+    }
+    .btn-primary:hover { box-shadow: 0 8px 32px rgba(255, 92, 58, 0.45); }
+    .btn-outline {
+      background: transparent; color: var(--col-text);
+      border: 2px solid rgba(255,255,255,0.15);
+    }
+    .btn-outline:hover { border-color: var(--col-accent-2); color: var(--col-accent-2); }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── SECTIONS ── */
+    section { padding: 6rem 2.4rem; }
+    .section-label {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--col-accent-2);
+      margin-bottom: 0.75rem;
+    }
+    .section-heading {
+      font-family: var(--font-display);
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      letter-spacing: -0.02em;
+      margin-bottom: 3rem;
+    }
+
+    /* ── PROJECT GRID ── */
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .project-card {
+      background: var(--col-surface);
+      border-radius: var(--radius);
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.05);
+      transition: transform 0.35s, box-shadow 0.35s;
+      display: flex; flex-direction: column;
+    }
+    .project-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+    }
+    .project-thumb {
+      height: 220px;
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--font-display);
+      font-size: 3rem;
+      position: relative; overflow: hidden;
+    }
+    .project-thumb::after {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(to bottom, transparent 60%, var(--col-surface));
+    }
+    .project-thumb.t1 { background: linear-gradient(135deg, var(--col-accent-1), var(--col-accent-3)); }
+    .project-thumb.t2 { background: linear-gradient(135deg, var(--col-accent-2), var(--col-accent-5)); }
+    .project-thumb.t3 { background: linear-gradient(135deg, var(--col-accent-4), var(--col-accent-1)); }
+    .project-thumb.t4 { background: linear-gradient(135deg, var(--col-accent-3), var(--col-accent-2)); }
+    .project-body { padding: 1.5rem; flex: 1; display: flex; flex-direction: column; }
+    .project-body h3 {
+      font-family: var(--font-display);
+      font-size: 1.35rem;
+      margin-bottom: 0.5rem;
+    }
+    .project-body p { color: var(--col-muted); font-size: 0.95rem; flex: 1; }
+    .project-tags {
+      display: flex; flex-wrap: wrap; gap: 0.5rem;
+      margin-top: 1.25rem;
+    }
+    .tag {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      padding: 0.3rem 0.7rem;
+      border-radius: 60px;
+      background: rgba(255,255,255,0.06);
+      color: var(--col-muted);
+      letter-spacing: 0.03em;
+    }
+
+    /* ── ABOUT ── */
+    .about-wrapper {
+      max-width: 900px; margin: 0 auto;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 4rem;
+      align-items: start;
+    }
+    .about-text p { color: var(--col-muted); margin-bottom: 1.2rem; font-size: 1.05rem; }
+    .about-text p strong { color: var(--col-text); }
+    .about-photo-placeholder {
+      aspect-ratio: 4/5;
+      border-radius: var(--radius);
+      background: linear-gradient(160deg, var(--col-accent-3), var(--col-accent-2));
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--font-mono); font-size: 0.85rem; color: rgba(0,0,0,0.5);
+      border: 3px dashed rgba(0,0,0,0.15);
+    }
+
+    /* ── SKILLS MARQUEE ── */
+    .marquee-section { overflow: hidden; padding: 3rem 0; }
+    .marquee-track {
+      display: flex; gap: 2rem; width: max-content;
+      animation: scroll 30s linear infinite;
+    }
+    .marquee-item {
+      font-family: var(--font-display);
+      font-size: clamp(1.5rem, 3vw, 2.5rem);
+      white-space: nowrap;
+      color: rgba(255,255,255,0.08);
+      transition: color 0.3s;
+    }
+    .marquee-item:hover { color: var(--col-accent-1); }
+    .marquee-item::after { content: ' ✦ '; color: var(--col-accent-3); opacity: 0.3; margin-left: 2rem; }
+
+    @keyframes scroll {
+      from { transform: translateX(0); }
+      to { transform: translateX(-50%); }
+    }
+
+    /* ── CONTACT ── */
+    .contact-section {
+      text-align: center;
+      padding: 8rem 2.4rem;
+      position: relative;
+    }
+    .contact-section .section-heading { margin-bottom: 1rem; }
+    .contact-desc { color: var(--col-muted); margin-bottom: 2.5rem; font-size: 1.1rem; }
+    .contact-links { display: flex; justify-content: center; gap: 1.5rem; flex-wrap: wrap; }
+    .contact-pill {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      padding: 0.75rem 1.8rem;
+      border-radius: 60px;
+      border: 1.5px solid rgba(255,255,255,0.1);
+      color: var(--col-text);
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.95rem;
+      transition: border-color 0.3s, color 0.3s, background 0.3s;
+    }
+    .contact-pill:hover {
+      border-color: var(--col-accent-2);
+      color: var(--col-accent-2);
+      background: rgba(58, 223, 255, 0.05);
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      text-align: center;
+      padding: 2rem;
+      color: var(--col-muted);
+      font-size: 0.8rem;
+      border-top: 1px solid rgba(255,255,255,0.04);
+    }
+
+    /* ── SCROLL REVEAL ── */
+    .reveal {
+      opacity: 0; transform: translateY(30px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      nav { padding: 1rem 1.4rem; }
+      .nav-links { gap: 1rem; }
+      .nav-links a { font-size: 0.8rem; }
+      section { padding: 4rem 1.4rem; }
+      .about-wrapper { grid-template-columns: 1fr; gap: 2rem; }
+      .projects-grid { grid-template-columns: 1fr; }
+      .hero { padding: 7rem 1.4rem 3rem; }
+    }
+    @media (max-width: 480px) {
+      .nav-links { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <a href="#" class="nav-logo">Simon.</a>
+    <ul class="nav-links">
+      <li><a href="#projects">Projects</a></li>
+      <li><a href="#about">About</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-bg">
+      <div class="blob blob-1"></div>
+      <div class="blob blob-2"></div>
+      <div class="blob blob-3"></div>
+    </div>
+    <div class="hero-content">
+      <p class="hero-tag">Welcome — I build things</p>
+      <h1 class="hero-title">
+        I <span class="highlight-1">design,</span>
+        <span class="highlight-2">build,</span> &amp;
+        <span class="highlight-3">ship</span> things.
+      </h1>
+      <p class="hero-desc">
+        Maker, hardware hacker, and creative builder. I design electronics, write firmware, and turn ideas into physical products.
+      </p>
+      <div class="hero-actions">
+        <a href="#projects" class="btn btn-primary">See My Work ↓</a>
+        <a href="#contact" class="btn btn-outline">Get in Touch</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- SKILLS MARQUEE -->
+  <div class="marquee-section">
+    <div class="marquee-track">
+      <span class="marquee-item">PCB Design</span>
+      <span class="marquee-item">Firmware</span>
+      <span class="marquee-item">3D Printing</span>
+      <span class="marquee-item">KiCad</span>
+      <span class="marquee-item">Embedded Systems</span>
+      <span class="marquee-item">Product Design</span>
+      <span class="marquee-item">Prototyping</span>
+      <span class="marquee-item">MIDI</span>
+      <span class="marquee-item">CAD</span>
+      <span class="marquee-item">Arduino</span>
+      <span class="marquee-item">RP2040</span>
+      <span class="marquee-item">USB Audio</span>
+      <!-- duplicate for seamless loop -->
+      <span class="marquee-item">PCB Design</span>
+      <span class="marquee-item">Firmware</span>
+      <span class="marquee-item">3D Printing</span>
+      <span class="marquee-item">KiCad</span>
+      <span class="marquee-item">Embedded Systems</span>
+      <span class="marquee-item">Product Design</span>
+      <span class="marquee-item">Prototyping</span>
+      <span class="marquee-item">MIDI</span>
+      <span class="marquee-item">CAD</span>
+      <span class="marquee-item">Arduino</span>
+      <span class="marquee-item">RP2040</span>
+      <span class="marquee-item">USB Audio</span>
+    </div>
+  </div>
+
+  <!-- PROJECTS -->
+  <section id="projects">
+    <p class="section-label reveal">// Featured Work</p>
+    <h2 class="section-heading reveal">Projects</h2>
+    <div class="projects-grid">
+
+      <div class="project-card reveal">
+        <div class="project-thumb t1">🎛️</div>
+        <div class="project-body">
+          <h3>The Takeout Box</h3>
+          <p>A portable split DJ controller with touch-sensitive controls, custom PCB, and RP2040 firmware. Heading to Kickstarter soon.</p>
+          <div class="project-tags">
+            <span class="tag">KiCad</span>
+            <span class="tag">RP2040</span>
+            <span class="tag">MIDI</span>
+            <span class="tag">Hardware</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="project-card reveal">
+        <div class="project-thumb t2">🚲</div>
+        <div class="project-body">
+          <h3>Pacific Coast Tour</h3>
+          <p>Planning and documenting a Seattle-to-San Diego bicycle touring adventure on a Salsa Fargo with a Rohloff hub.</p>
+          <div class="project-tags">
+            <span class="tag">Cycling</span>
+            <span class="tag">Adventure</span>
+            <span class="tag">Bikepacking</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="project-card reveal">
+        <div class="project-thumb t3">⌨️</div>
+        <div class="project-body">
+          <h3>E-Ink Typewriter</h3>
+          <p>A Raspberry Pi–based distraction-free writing device with an e-ink display for journaling and focused writing.</p>
+          <div class="project-tags">
+            <span class="tag">Raspberry Pi</span>
+            <span class="tag">E-Ink</span>
+            <span class="tag">Python</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="project-card reveal">
+        <div class="project-thumb t4">🌊</div>
+        <div class="project-body">
+          <h3>Your Next Project</h3>
+          <p>Replace this card with another project — hardware, software, creative — whatever you're working on next.</p>
+          <div class="project-tags">
+            <span class="tag">Placeholder</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="about">
+    <div class="about-wrapper">
+      <div>
+        <p class="section-label reveal">// About Me</p>
+        <h2 class="section-heading reveal">A bit about Simon</h2>
+        <div class="about-text reveal">
+          <p>I'm a <strong>maker and hardware hacker</strong> based in Seattle. I love the process of taking an idea from napkin sketch to working prototype — designing circuits, writing firmware, and building enclosures.</p>
+          <p>My current focus is the <strong>Takeout Box</strong>, a portable split DJ controller that I'm bringing to life through custom PCB design, touch-sensitive interfaces, and a whole lot of soldering.</p>
+          <p>When I'm not at the workbench, you'll find me on my bike exploring the Pacific Northwest, tinkering with Raspberry Pi projects, or digging through crates for records.</p>
+        </div>
+      </div>
+      <div class="reveal">
+        <div class="about-photo-placeholder">↑ Your photo here</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact" class="contact-section">
+    <p class="section-label reveal">// Say Hello</p>
+    <h2 class="section-heading reveal">Let's Connect</h2>
+    <p class="contact-desc reveal">Interested in collaborating, chatting about hardware, or just want to say hi?</p>
+    <div class="contact-links reveal">
+      <a href="mailto:you@yourdomain.com" class="contact-pill">✉ Email</a>
+      <a href="https://github.com/yourusername" class="contact-pill" target="_blank">⌘ GitHub</a>
+      <a href="https://youtube.com/@yourchannel" class="contact-pill" target="_blank">▶ YouTube</a>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>&copy; 2026 Simon. Built by hand.</p>
+  </footer>
+
+  <!-- SCROLL REVEAL SCRIPT -->
+  <script>
+    const revealEls = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.12 });
+    revealEls.forEach(el => observer.observe(el));
+  </script>
+
+</body>
+</html>
