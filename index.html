@@ -200,6 +200,12 @@
       font-size: 3rem;
       position: relative; overflow: hidden;
     }
+    .project-thumb img {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      z-index: 0;
+    }
     .project-thumb::after {
       content: ''; position: absolute; inset: 0;
       background: linear-gradient(to bottom, transparent 60%, var(--col-surface));
@@ -398,7 +404,9 @@
     <div class="projects-grid">
 
       <div class="project-card reveal">
-        <div class="project-thumb t1">🎛️</div>
+        <div class="project-thumb t1">
+          <img src="images/takeout-box.jpg" alt="The Takeout Box">
+        </div>
         <div class="project-body">
           <h3>The Takeout Box</h3>
           <p>A portable split DJ controller with touch-sensitive controls, custom PCB, and RP2040 firmware. Heading to Kickstarter soon.</p>
@@ -412,7 +420,9 @@
       </div>
 
       <div class="project-card reveal">
-        <div class="project-thumb t2">⌨️</div>
+        <div class="project-thumb t2">
+          <img src="images/writer-deck.jpg" alt="Raspberry Pi Writer Deck">
+        </div>
         <div class="project-body">
           <h3>Raspberry Pi Writer Deck</h3>
           <p>A Raspberry Pi–based distraction-free writing device with an OLED screen for journaling and focused writing.</p>
@@ -425,7 +435,9 @@
       </div>
 
       <div class="project-card reveal">
-        <div class="project-thumb t3">🎩</div>
+        <div class="project-thumb t3">
+          <img src="images/led-hat.jpg" alt="LED Bucket Hat">
+        </div>
         <div class="project-body">
           <h3>LED Bucket Hat</h3>
           <p>A rave-ready hat with sound reactive LEDs capable of complex and mesmerizing patterns</p>
@@ -438,7 +450,9 @@
       </div>
 
       <div class="project-card reveal">
-        <div class="project-thumb t4">🚲</div>
+        <div class="project-thumb t4">
+          <img src="images/bikes.jpg" alt="Bikes">
+        </div>
         <div class="project-body">
           <h3>Bikes</h3>
           <p>A gallery of all the bikes I have worked on, built and tinkered with</p>
@@ -451,7 +465,9 @@
       </div>
 
       <div class="project-card reveal">
-        <div class="project-thumb t1">📄</div>
+        <div class="project-thumb t1">
+          <img src="images/origami.jpg" alt="Origami">
+        </div>
         <div class="project-body">
           <h3>Origami</h3>
           <p>Pieces that I have folded over the years</p>
@@ -464,7 +480,9 @@
       </div>
 
       <div class="project-card reveal">
-        <div class="project-thumb t2">🧶</div>
+        <div class="project-thumb t2">
+          <img src="images/crochet.jpg" alt="Crochet">
+        </div>
         <div class="project-body">
           <h3>Crochet</h3>
           <p>Row 26: 11 sc, inc, 13 sc, inc, 2 sc (30)</p>
@@ -492,7 +510,7 @@
         </div>
       </div>
       <div class="reveal">
-        <img src="me.jpg" alt="Photo of Simon"
+        <img src="images/me.jpg" alt="Photo of Simon"
              style="width:100%; border-radius:16px; object-fit:cover; aspect-ratio:4/5;">
       </div>
     </div>
