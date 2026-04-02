@@ -361,15 +361,17 @@
       display: flex;
       flex: 1;
       overflow: hidden;
+      min-height: 0;
     }
 
     .modal-carousel {
       position: relative;
       background: #000;
-      width: 100%;
+      flex: 1;
+      min-width: 0;
       aspect-ratio: 4 / 3;
-      flex-shrink: 0;
       overflow: hidden;
+      align-self: stretch;
     }
 
     .carousel-slides {
@@ -467,6 +469,20 @@
 
     /* make cards clickable */
     .project-card { cursor: pointer; }
+
+    /* zoom-in animation */
+    @keyframes modalZoomIn {
+      from { opacity: 0; transform: scale(var(--modal-scale-from)) translate(var(--modal-tx), var(--modal-ty)); }
+      to   { opacity: 1; transform: scale(1) translate(0, 0); }
+    }
+    @keyframes modalZoomOut {
+      from { opacity: 1; transform: scale(1) translate(0, 0); }
+      to   { opacity: 0; transform: scale(var(--modal-scale-from)) translate(var(--modal-tx), var(--modal-ty)); }
+    }
+    .modal.zooming-in  { animation: modalZoomIn  0.35s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+    .modal.zooming-out { animation: modalZoomOut 0.25s cubic-bezier(0.55, 0, 1, 0.45) forwards; }
+    .modal-overlay { transition: background 0.3s; }
+    .modal-overlay:not(.open) { background: rgba(0,0,0,0); }
 
     /* ── SCROLL REVEAL ── */
     .reveal {
@@ -898,7 +914,9 @@
     });
     document.getElementById('modal-close').addEventListener('click', closeModal);
 
-    function openModal(projectKey) {
+    const modal = document.getElementById('modal');
+
+    function openModal(projectKey, triggerEl) {
       const project = PROJECTS[projectKey];
       if (!project) return;
       currentSlides = project.slides;
@@ -906,17 +924,41 @@
       modalTitle.textContent = project.title;
       buildSlides(currentSlides);
       updateInfo(0);
+
+      // compute zoom origin from the thumbnail's position
+      if (triggerEl) {
+        const thumbRect = triggerEl.querySelector('.project-thumb').getBoundingClientRect();
+        const vw = window.innerWidth;
+        const vh = window.innerHeight;
+        // where the thumb center is relative to viewport center (as fraction of modal size)
+        const tx = ((thumbRect.left + thumbRect.width / 2) - vw / 2) + 'px';
+        const ty = ((thumbRect.top  + thumbRect.height / 2) - vh / 2) + 'px';
+        const scaleFrom = Math.max(thumbRect.width / vw, 0.15).toFixed(3);
+        modal.style.setProperty('--modal-tx', tx);
+        modal.style.setProperty('--modal-ty', ty);
+        modal.style.setProperty('--modal-scale-from', scaleFrom);
+        modal.style.transformOrigin = 'center center';
+      }
+
       overlay.classList.add('open');
       document.body.style.overflow = 'hidden';
+      modal.classList.remove('zooming-out');
+      modal.classList.add('zooming-in');
+      modal.addEventListener('animationend', () => modal.classList.remove('zooming-in'), { once: true });
     }
 
     function closeModal() {
-      overlay.classList.remove('open');
-      document.body.style.overflow = '';
+      modal.classList.remove('zooming-in');
+      modal.classList.add('zooming-out');
+      modal.addEventListener('animationend', () => {
+        modal.classList.remove('zooming-out');
+        overlay.classList.remove('open');
+        document.body.style.overflow = '';
+      }, { once: true });
     }
 
     document.querySelectorAll('.project-card[data-project]').forEach(card => {
-      card.addEventListener('click', () => openModal(card.dataset.project));
+      card.addEventListener('click', () => openModal(card.dataset.project, card));
     });
   </script>
 
