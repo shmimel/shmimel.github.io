@@ -308,6 +308,167 @@
       border-top: 1px solid rgba(255,255,255,0.04);
     }
 
+    /* ── CAROUSEL MODAL ── */
+    .modal-overlay {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.82);
+      backdrop-filter: blur(6px);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+    .modal-overlay.open { display: flex; }
+
+    .modal {
+      background: var(--col-surface);
+      border-radius: var(--radius);
+      border: 1px solid rgba(255,255,255,0.08);
+      max-width: 1000px;
+      width: 100%;
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.2rem 1.5rem;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      flex-shrink: 0;
+    }
+    .modal-title {
+      font-family: var(--font-display);
+      font-size: 1.5rem;
+      letter-spacing: -0.02em;
+    }
+    .modal-close {
+      background: none; border: none; cursor: pointer;
+      color: var(--col-muted);
+      font-size: 1.5rem; line-height: 1;
+      padding: 0.25rem 0.5rem;
+      border-radius: 6px;
+      transition: color 0.2s, background 0.2s;
+    }
+    .modal-close:hover { color: var(--col-text); background: rgba(255,255,255,0.07); }
+
+    .modal-body {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    .modal-carousel {
+      flex: 1;
+      position: relative;
+      background: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 380px;
+    }
+
+    .carousel-slides {
+      width: 100%; height: 100%;
+      position: relative;
+    }
+
+    .carousel-slide {
+      position: absolute; inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+    .carousel-slide.active { display: flex; }
+
+    .carousel-slide a,
+    .carousel-slide > img {
+      display: block;
+      width: 100%; height: 100%;
+    }
+    .carousel-slide a { display: flex; align-items: center; justify-content: center; }
+    .carousel-slide img {
+      width: 100%; height: 100%;
+      object-fit: contain;
+      transition: opacity 0.3s;
+    }
+    .carousel-slide a:hover img { opacity: 0.85; }
+
+    .carousel-btn {
+      position: absolute;
+      top: 50%; transform: translateY(-50%);
+      background: rgba(0,0,0,0.55);
+      border: 1px solid rgba(255,255,255,0.12);
+      color: #fff;
+      font-size: 1.2rem;
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.2s;
+      z-index: 2;
+    }
+    .carousel-btn:hover { background: rgba(255,255,255,0.15); }
+    .carousel-btn.prev { left: 0.75rem; }
+    .carousel-btn.next { right: 0.75rem; }
+    .carousel-btn.hidden { display: none; }
+
+    .carousel-dots {
+      position: absolute;
+      bottom: 0.75rem; left: 50%; transform: translateX(-50%);
+      display: flex; gap: 0.4rem; z-index: 2;
+    }
+    .carousel-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: rgba(255,255,255,0.25);
+      cursor: pointer; transition: background 0.2s;
+      border: none;
+    }
+    .carousel-dot.active { background: #fff; }
+
+    .modal-info {
+      width: 260px;
+      flex-shrink: 0;
+      padding: 1.5rem;
+      overflow-y: auto;
+      border-left: 1px solid rgba(255,255,255,0.06);
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    .modal-slide-title {
+      font-family: var(--font-display);
+      font-size: 1.05rem;
+    }
+    .modal-slide-desc {
+      color: var(--col-muted);
+      font-size: 0.9rem;
+      line-height: 1.6;
+    }
+    .modal-slide-link {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      font-size: 0.85rem;
+      color: var(--col-accent-2);
+      text-decoration: none;
+      margin-top: auto;
+      padding-top: 0.5rem;
+      transition: opacity 0.2s;
+    }
+    .modal-slide-link:hover { opacity: 0.75; }
+    .modal-counter {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--col-muted);
+    }
+
+    /* make cards clickable */
+    .project-card { cursor: pointer; }
+
     /* ── SCROLL REVEAL ── */
     .reveal {
       opacity: 0; transform: translateY(30px);
@@ -324,9 +485,13 @@
       .about-wrapper { grid-template-columns: 1fr; gap: 2rem; }
       .projects-grid { grid-template-columns: 1fr; }
       .hero { padding: 7rem 1.4rem 3rem; }
+      .modal-body { flex-direction: column; }
+      .modal-info { width: 100%; border-left: none; border-top: 1px solid rgba(255,255,255,0.06); }
+      .modal-carousel { min-height: 260px; }
     }
     @media (max-width: 480px) {
       .nav-links { display: none; }
+      .modal-overlay { padding: 0.75rem; }
     }
   </style>
 </head>
@@ -403,7 +568,7 @@
     <h2 class="section-heading reveal">Projects</h2>
     <div class="projects-grid">
 
-      <div class="project-card reveal">
+      <div class="project-card reveal" data-project="takeout-box">
         <div class="project-thumb t1">
           <img src="images/takeout-box.jpg" alt="The Takeout Box">
         </div>
@@ -419,7 +584,7 @@
         </div>
       </div>
 
-      <div class="project-card reveal">
+      <div class="project-card reveal" data-project="writer-deck">
         <div class="project-thumb t2">
           <img src="images/writer-deck.jpg" alt="Raspberry Pi Writer Deck">
         </div>
@@ -434,7 +599,7 @@
         </div>
       </div>
 
-      <div class="project-card reveal">
+      <div class="project-card reveal" data-project="led-hat">
         <div class="project-thumb t3">
           <img src="images/led-hat.jpg" alt="LED Bucket Hat">
         </div>
@@ -449,7 +614,7 @@
         </div>
       </div>
 
-      <div class="project-card reveal">
+      <div class="project-card reveal" data-project="bikes">
         <div class="project-thumb t4">
           <img src="images/bikes.jpg" alt="Bikes">
         </div>
@@ -464,7 +629,7 @@
         </div>
       </div>
 
-      <div class="project-card reveal">
+      <div class="project-card reveal" data-project="origami">
         <div class="project-thumb t1">
           <img src="images/origami.jpg" alt="Origami">
         </div>
@@ -479,7 +644,7 @@
         </div>
       </div>
 
-      <div class="project-card reveal">
+      <div class="project-card reveal" data-project="crochet">
         <div class="project-thumb t2">
           <img src="images/crochet.jpg" alt="Crochet">
         </div>
@@ -533,6 +698,30 @@
     <p>&copy; 2026 </p>
   </footer>
 
+  <!-- CAROUSEL MODAL -->
+  <div class="modal-overlay" id="modal-overlay">
+    <div class="modal" id="modal">
+      <div class="modal-header">
+        <span class="modal-title" id="modal-title"></span>
+        <button class="modal-close" id="modal-close" aria-label="Close">&#x2715;</button>
+      </div>
+      <div class="modal-body">
+        <div class="modal-carousel">
+          <div class="carousel-slides" id="carousel-slides"></div>
+          <button class="carousel-btn prev" id="carousel-prev">&#8592;</button>
+          <button class="carousel-btn next" id="carousel-next">&#8594;</button>
+          <div class="carousel-dots" id="carousel-dots"></div>
+        </div>
+        <div class="modal-info">
+          <span class="modal-counter" id="modal-counter"></span>
+          <div class="modal-slide-title" id="modal-slide-title"></div>
+          <div class="modal-slide-desc" id="modal-slide-desc"></div>
+          <a class="modal-slide-link" id="modal-slide-link" href="#" target="_blank" rel="noopener" style="display:none"></a>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- SCROLL REVEAL SCRIPT -->
   <script>
     const revealEls = document.querySelectorAll('.reveal');
@@ -544,6 +733,193 @@
       });
     }, { threshold: 0.12 });
     revealEls.forEach(el => observer.observe(el));
+  </script>
+
+  <!-- CAROUSEL SCRIPT -->
+  <script>
+    const PROJECTS = {
+      'takeout-box': {
+        title: 'The Takeout Box',
+        slides: [
+          {
+            img: 'images/takeout-box.jpg',
+            slideTitle: 'The Takeout Box',
+            desc: 'A portable split DJ controller with touch-sensitive controls, custom PCB, and RP2040 firmware.',
+            link: { label: '↗ Visit rallyaudio.io', href: 'https://rallyaudio.io' }
+          },
+          {
+            img: 'images/takeout-box.jpg',
+            slideTitle: 'On Instagram',
+            desc: 'Follow the build journey and behind-the-scenes on Instagram.',
+            link: { label: '↗ Instagram', href: 'https://www.instagram.com/rallyaudio/' }
+          }
+        ]
+      },
+      'writer-deck': {
+        title: 'Raspberry Pi Writer Deck',
+        slides: [
+          {
+            img: 'images/writer-deck.jpg',
+            slideTitle: 'Writer Deck',
+            desc: 'A Raspberry Pi–based distraction-free writing device with an OLED screen for journaling and focused writing.',
+            link: { label: '↗ View on GitHub', href: 'https://github.com/shmimel/bee-write-back' }
+          }
+        ]
+      },
+      'led-hat': {
+        title: 'LED Bucket Hat',
+        slides: [
+          {
+            img: 'images/led-hat.jpg',
+            slideTitle: 'LED Bucket Hat',
+            desc: 'A rave-ready hat with sound reactive LEDs capable of complex and mesmerizing patterns.',
+            link: null
+          }
+        ]
+      },
+      'bikes': {
+        title: 'Bikes',
+        slides: [
+          {
+            img: 'images/bikes.jpg',
+            slideTitle: 'Bikes',
+            desc: 'A gallery of all the bikes I have worked on, built and tinkered with.',
+            link: null
+          }
+        ]
+      },
+      'origami': {
+        title: 'Origami',
+        slides: [
+          {
+            img: 'images/origami.jpg',
+            slideTitle: 'Origami',
+            desc: 'Pieces that I have folded over the years.',
+            link: null
+          }
+        ]
+      },
+      'crochet': {
+        title: 'Crochet',
+        slides: [
+          {
+            img: 'images/crochet.jpg',
+            slideTitle: 'Crochet',
+            desc: 'Row 26: 11 sc, inc, 13 sc, inc, 2 sc (30)',
+            link: null
+          }
+        ]
+      }
+    };
+
+    let currentSlide = 0;
+    let currentSlides = [];
+
+    const overlay = document.getElementById('modal-overlay');
+    const modalTitle = document.getElementById('modal-title');
+    const slidesContainer = document.getElementById('carousel-slides');
+    const dotsContainer = document.getElementById('carousel-dots');
+    const prevBtn = document.getElementById('carousel-prev');
+    const nextBtn = document.getElementById('carousel-next');
+    const counter = document.getElementById('modal-counter');
+    const slideTitle = document.getElementById('modal-slide-title');
+    const slideDesc = document.getElementById('modal-slide-desc');
+    const slideLink = document.getElementById('modal-slide-link');
+
+    function buildSlides(slides) {
+      slidesContainer.innerHTML = '';
+      dotsContainer.innerHTML = '';
+      slides.forEach((s, i) => {
+        const div = document.createElement('div');
+        div.className = 'carousel-slide' + (i === 0 ? ' active' : '');
+        if (s.link) {
+          const a = document.createElement('a');
+          a.href = s.link.href;
+          a.target = '_blank';
+          a.rel = 'noopener';
+          const img = document.createElement('img');
+          img.src = s.img;
+          img.alt = s.slideTitle;
+          a.appendChild(img);
+          div.appendChild(a);
+        } else {
+          const img = document.createElement('img');
+          img.src = s.img;
+          img.alt = s.slideTitle;
+          div.appendChild(img);
+        }
+        slidesContainer.appendChild(div);
+
+        const dot = document.createElement('button');
+        dot.className = 'carousel-dot' + (i === 0 ? ' active' : '');
+        dot.addEventListener('click', () => goTo(i));
+        dotsContainer.appendChild(dot);
+      });
+      dotsContainer.style.display = slides.length > 1 ? 'flex' : 'none';
+      prevBtn.classList.toggle('hidden', slides.length <= 1);
+      nextBtn.classList.toggle('hidden', slides.length <= 1);
+    }
+
+    function updateInfo(idx) {
+      const s = currentSlides[idx];
+      counter.textContent = currentSlides.length > 1 ? (idx + 1) + ' / ' + currentSlides.length : '';
+      slideTitle.textContent = s.slideTitle;
+      slideDesc.textContent = s.desc;
+      if (s.link) {
+        slideLink.style.display = 'inline-flex';
+        slideLink.href = s.link.href;
+        slideLink.textContent = s.link.label;
+      } else {
+        slideLink.style.display = 'none';
+      }
+    }
+
+    function goTo(idx) {
+      const allSlides = slidesContainer.querySelectorAll('.carousel-slide');
+      const allDots = dotsContainer.querySelectorAll('.carousel-dot');
+      allSlides[currentSlide].classList.remove('active');
+      allDots[currentSlide] && allDots[currentSlide].classList.remove('active');
+      currentSlide = (idx + currentSlides.length) % currentSlides.length;
+      allSlides[currentSlide].classList.add('active');
+      allDots[currentSlide] && allDots[currentSlide].classList.add('active');
+      updateInfo(currentSlide);
+    }
+
+    prevBtn.addEventListener('click', () => goTo(currentSlide - 1));
+    nextBtn.addEventListener('click', () => goTo(currentSlide + 1));
+
+    document.addEventListener('keydown', (e) => {
+      if (!overlay.classList.contains('open')) return;
+      if (e.key === 'Escape') closeModal();
+      if (e.key === 'ArrowLeft') goTo(currentSlide - 1);
+      if (e.key === 'ArrowRight') goTo(currentSlide + 1);
+    });
+
+    overlay.addEventListener('click', (e) => {
+      if (e.target === overlay) closeModal();
+    });
+    document.getElementById('modal-close').addEventListener('click', closeModal);
+
+    function openModal(projectKey) {
+      const project = PROJECTS[projectKey];
+      if (!project) return;
+      currentSlides = project.slides;
+      currentSlide = 0;
+      modalTitle.textContent = project.title;
+      buildSlides(currentSlides);
+      updateInfo(0);
+      overlay.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+      overlay.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    document.querySelectorAll('.project-card[data-project]').forEach(card => {
+      card.addEventListener('click', () => openModal(card.dataset.project));
+    });
   </script>
 
 </body>
